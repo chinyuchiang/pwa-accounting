@@ -1,0 +1,13 @@
+{
+  "name": "記帳本",
+  "short_name": "記帳本",
+  "description": "個人記帳 PWA — Google Sheets 為資料庫，支援 LINE 快速記帳",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f1f5f9",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
