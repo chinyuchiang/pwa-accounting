@@ -1,11 +1,11 @@
-$DEPLOYMENT_ID = "AKfycbyxb7p_WQHddMlU-S5czzhH8wJEjQ1ISXmwZkKjDxAJLJXbxqAfAb1-TiEAvLxYyXo-Jw"
+cd "$PSScriptRoot"
 
-Write-Host "Pushing code..." -ForegroundColor Cyan
+Write-Host "Pushing code to Apps Script..." -ForegroundColor Cyan
 clasp push --force
 if (-not $?) { Write-Host "Push failed." -ForegroundColor Red; exit 1 }
 
-Write-Host "Deploying new version..." -ForegroundColor Cyan
-clasp deploy --deploymentId $DEPLOYMENT_ID
-if (-not $?) { Write-Host "Deploy failed." -ForegroundColor Red; exit 1 }
-
-Write-Host "Done." -ForegroundColor Green
+Write-Host ""
+Write-Host "Code updated!" -ForegroundColor Green
+Write-Host ""
+Write-Host "如需更新線上版本，請到 Apps Script 執行：" -ForegroundColor Yellow
+Write-Host "  部署 -> 管理部署 -> 鉛筆 -> 版本選「建立新版本」-> 部署" -ForegroundColor Yellow
