@@ -70,6 +70,10 @@ function doGet(e) {
       result = deleteRecurring(p.id);
     } else if (action === 'toggleRecurring') {
       result = toggleRecurring(p.id);
+    } else if (action === 'updateTransaction') {
+      result = updateTransaction(p.id, { date: p.date, type: p.type, category: p.category, amount: parseFloat(p.amount), note: p.note || '', account: p.account || '' });
+    } else if (action === 'getMonthlyTrend') {
+      result = getMonthlyTrend(parseInt(p.months) || 6);
     } else if (action === 'processRecurring') {
       result = processRecurring();
     } else if (action === 'debugTx') {
@@ -105,8 +109,10 @@ function doPost(e) {
 // Google Sheets CRUD
 // ============================================================
 
+var SPREADSHEET_ID = '18NnbON_BvpLZzcfkK-RdPcqj0JqsWHFyKBOw3-7L0lg';
+
 function getSheet(name) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   var sheet = ss.getSheetByName(name);
   if (!sheet) {
     sheet = ss.insertSheet(name);
@@ -190,6 +196,30 @@ function getMonthlySummary(year, month) {
     }
   }
   return summary;
+}
+
+function updateTransaction(id, data) {
+  var sheet = getSheet(SHEET_NAMES.TRANSACTIONS);
+  var rows = sheet.getDataRange().getValues();
+  for (var i = 1; i < rows.length; i++) {
+    if (String(rows[i][0]) === String(id)) {
+      var ts = Utilities.formatDate(new Date(), 'Asia/Taipei', "yyyy-MM-dd'T'HH:mm:ss");
+      sheet.getRange(i + 1, 1, 1, 9).setValues([[
+        rows[i][0],
+        data.date || sheetDateStr(rows[i][1]),
+        data.type || rows[i][2],
+        data.category || rows[i][3],
+        data.amount !== undefined ? data.amount : rows[i][4],
+        data.note !== undefined ? data.note : String(rows[i][5] || ''),
+        ts,
+        data.account !== undefined ? data.account : String(rows[i][7] || ''),
+        rows[i][8]
+      ]]);
+      sheet.getRange(i + 1, 2).setNumberFormat('@STRING@');
+      return { updated: id };
+    }
+  }
+  throw new Error('找不到此筆記錄: ' + id);
 }
 
 function deleteTransaction(id) {
@@ -318,7 +348,7 @@ function getAccountBalances() {
     }
   }
   return accounts.map(function(a) {
-    return { id: a.id, name: a.name, emoji: a.emoji, color: a.color, balance: Math.round((balances[a.id] || 0) * 100) / 100 };
+    return { id: a.id, name: a.name, emoji: a.emoji, color: a.color, initialBalance: a.initialBalance, balance: Math.round((balances[a.id] || 0) * 100) / 100 };
   });
 }
 
@@ -417,6 +447,35 @@ function processRecurring() {
     }
   }
   return { processed: processed, date: today };
+}
+
+function getMonthlyTrend(months) {
+  months = parseInt(months) || 6;
+  var now = new Date();
+  var sheet = getSheet(SHEET_NAMES.TRANSACTIONS);
+  var data = sheet.getDataRange().getValues();
+  var result = [];
+  var monthMap = {};
+  for (var i = months - 1; i >= 0; i--) {
+    var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    var y = d.getFullYear();
+    var m = d.getMonth() + 1;
+    var key = y + '-' + String(m).padStart(2, '0');
+    var entry = { year: y, month: m, label: m + '月', expense: 0, income: 0 };
+    monthMap[key] = entry;
+    result.push(entry);
+  }
+  for (var j = 1; j < data.length; j++) {
+    var r = data[j];
+    if (!r[0]) continue;
+    var key2 = sheetDateStr(r[1]).substring(0, 7);
+    if (!monthMap[key2]) continue;
+    var type = String(r[2] || '');
+    var amount = Number(r[4]) || 0;
+    if (type === '收入') monthMap[key2].income += amount;
+    else if (type === '支出') monthMap[key2].expense += amount;
+  }
+  return result;
 }
 
 // ============================================================

@@ -25,7 +25,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #offline-banner.show{display:block}
 .hdr{background:var(--primary);color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .hdr h1{font-size:18px;font-weight:700}
-#refresh-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.5);display:none;margin-left:6px;vertical-align:middle}
+#refresh-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.5);display:none;margin-left:6px}
 #refresh-dot.on{display:inline-block;animation:pulse .9s infinite}
 @keyframes pulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
 .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:72px}
@@ -63,10 +63,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .submit-btn.inc{background:var(--income)}
 .submit-btn:active{opacity:.85}
 .submit-btn:disabled{opacity:.5}
+/* Last tx button */
+.last-tx-btn{width:100%;padding:12px;margin-top:10px;border:2px dashed var(--border);border-radius:12px;background:transparent;color:var(--muted);font-size:13px;cursor:pointer;text-align:center;transition:.15s}
+.last-tx-btn:active{background:var(--bg)}
 /* Month nav */
 .month-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .month-nav h2{font-size:16px;font-weight:700}
 .month-nav button{width:36px;height:36px;border:none;background:#fff;border-radius:10px;font-size:16px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+/* Search bar */
+.search-bar{display:flex;gap:8px;margin-bottom:10px;align-items:center}
+.search-input{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-size:14px;background:#fff;outline:none;color:var(--text)}
+.search-input:focus{border-color:var(--primary)}
+/* Filter chip */
+.filter-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:var(--primary-light);color:var(--primary);border-radius:20px;font-size:12px;font-weight:600;margin-bottom:10px}
+.filter-chip-x{background:none;border:none;color:var(--primary);font-size:16px;cursor:pointer;padding:0;line-height:1}
 /* Summary row */
 .sum-row{display:flex;gap:8px;margin-bottom:12px}
 .sum-item{flex:1;background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.07)}
@@ -86,8 +96,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tx-amt.exp{color:var(--expense)}.tx-amt.inc{color:var(--income)}.tx-amt.trf{color:var(--primary)}
 /* Account cards */
 .acct-card{background:#fff;border-radius:16px;padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.acct-card-body{display:flex;align-items:center;gap:14px;flex:1;cursor:pointer;min-width:0}
 .acct-em{font-size:34px;width:46px;text-align:center}
-.acct-body{flex:1}
+.acct-body{flex:1;min-width:0}
 .acct-name{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:2px}
 .acct-bal{font-size:24px;font-weight:800}
 .acct-bal.pos{color:var(--income)}
@@ -103,7 +114,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .sec-hdr h3{font-size:14px;font-weight:700;color:var(--muted)}
 .btn-sm{padding:6px 14px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer}
-.btn-sm.danger{background:var(--expense)}
 /* Recurring items */
 .rec-item{background:#fff;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:6px;box-shadow:0 1px 2px rgba(0,0,0,.06)}
 .rec-info{flex:1;min-width:0}
@@ -155,27 +165,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* Bottom sheet overlay */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s}
 .overlay.show{opacity:1;pointer-events:all}
-.bsheet{background:#fff;width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .28s;max-height:85vh;overflow-y:auto}
+.bsheet{background:#fff;width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .28s;max-height:90vh;overflow-y:auto}
 .overlay.show .bsheet{transform:translateY(0)}
 .bsheet-title{font-size:16px;font-weight:700;text-align:center;margin-bottom:16px}
 .bsheet-btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:15px;cursor:pointer;margin-bottom:8px;font-weight:500}
 .bsheet-btn.del{background:var(--expense-light);color:var(--expense);font-weight:700}
 .bsheet-btn.cnl{background:var(--bg);color:var(--muted)}
 .bsheet-btn.ok{background:var(--primary);color:#fff;font-weight:700}
+/* Options sheet buttons */
+.opt-btn{width:100%;padding:15px 16px;background:var(--bg);border:none;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;color:var(--text);margin-bottom:8px}
+.opt-btn:active{opacity:.8}
 /* Form label */
 .form-label{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px;display:block}
 /* Account picker in bottom sheet */
 .acct-pick{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
 .acct-pick-btn{padding:7px 14px;border:2px solid var(--border);border-radius:20px;background:#fff;font-size:13px;cursor:pointer;transition:.15s}
 .acct-pick-btn.on{border-color:var(--primary);background:var(--primary-light);color:var(--primary);font-weight:600}
-/* Emoji presets */
+/* Emoji / Color presets */
 .emoji-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .emoji-btn{width:40px;height:40px;border:2px solid var(--border);border-radius:10px;background:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .emoji-btn.on{border-color:var(--primary);background:var(--primary-light)}
-/* Color presets */
 .color-row{display:flex;gap:8px;margin-bottom:12px}
 .color-btn{width:32px;height:32px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:.15s}
 .color-btn.on{border-color:var(--text);transform:scale(1.15)}
+/* Edit cat grid (compact) */
+.edit-cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.edit-cat-grid .cat-btn .em{font-size:22px}
+.edit-cat-grid .cat-btn .lb{font-size:9px}
 /* Misc */
 .loading{text-align:center;padding:32px;color:var(--muted)}
 .empty{text-align:center;padding:40px 16px;color:var(--muted)}
@@ -213,6 +229,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
       <input id="note-input" class="txt-input" type="text" placeholder="備註（選填）">
       <input id="date-input" type="date">
       <button class="submit-btn" id="submit-btn" onclick="submitTx()">記帳</button>
+      <button class="last-tx-btn" id="last-tx-btn" style="display:none" onclick="applyLastTx()">⚡ <span id="last-tx-label"></span></button>
     </div>
   </div>
 
@@ -223,6 +240,10 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
       <h2 id="list-month"></h2>
       <button onclick="chgMonth('list',1)">▶</button>
     </div>
+    <div class="search-bar">
+      <input id="search-input" class="search-input" type="text" placeholder="🔍 搜尋備註或分類…" oninput="onSearch(this.value)">
+    </div>
+    <div id="acct-filter-chip"></div>
     <div class="sum-row">
       <div class="sum-item"><div class="lbl">支出</div><div class="val exp" id="ls-exp">$0</div></div>
       <div class="sum-item"><div class="lbl">收入</div><div class="val inc" id="ls-inc">$0</div></div>
@@ -267,6 +288,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
     </div>
     <div class="chart-card"><h3>分類佔比</h3><canvas id="chart-donut" height="200"></canvas></div>
     <div class="chart-card"><h3>每日消費</h3><canvas id="chart-bar" height="170"></canvas></div>
+    <div class="chart-card"><h3>近6個月趨勢</h3><canvas id="chart-trend" height="170"></canvas></div>
     <div class="chart-card"><h3>分類明細</h3><div id="cat-stats-list"></div></div>
   </div>
 
@@ -294,13 +316,12 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
     </div>
     <div class="section-mb">
       <div class="sg-title">關於</div>
-      <div class="si"><span class="si-lbl">版本</span><span class="si-val">v2.0.0</span></div>
+      <div class="si"><span class="si-lbl">版本</span><span class="si-val">v2.1.0</span></div>
     </div>
   </div>
 
 </div><!-- /scroll -->
 
-<!-- Bottom Navigation -->
 <nav class="nav">
   <button class="nav-btn on" id="nav-entry" onclick="switchTab('entry',this)"><span class="ic">✏️</span>記帳</button>
   <button class="nav-btn" id="nav-list" onclick="switchTab('list',this)"><span class="ic">📋</span>明細</button>
@@ -311,24 +332,45 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 
 <div id="toast"></div>
 
+<!-- ── Transaction options sheet ── -->
+<div class="overlay" id="ov-tx-options" onclick="ovClick(event,'ov-tx-options')">
+  <div class="bsheet">
+    <div class="bsheet-title" id="tx-options-title">選擇操作</div>
+    <button class="opt-btn" onclick="openEditFromOptions()">✏️ 編輯此筆</button>
+    <button class="opt-btn" style="color:var(--expense)" onclick="delFromOptions()">🗑 刪除此筆</button>
+    <button class="bsheet-btn cnl" onclick="closeOv('ov-tx-options')">取消</button>
+  </div>
+</div>
+
+<!-- ── Edit transaction sheet ── -->
+<div class="overlay" id="ov-edit-tx" onclick="ovClick(event,'ov-edit-tx')">
+  <div class="bsheet">
+    <div class="bsheet-title">✏️ 編輯記錄</div>
+    <div class="type-toggle" style="margin-bottom:12px">
+      <button class="type-btn on exp" id="edit-btn-exp" onclick="setEditType('支出')">💸 支出</button>
+      <button class="type-btn inc" id="edit-btn-inc" onclick="setEditType('收入')">💰 收入</button>
+    </div>
+    <label class="form-label">分類</label>
+    <div id="edit-cat-grid" class="edit-cat-grid"></div>
+    <label class="form-label">金額</label>
+    <input id="edit-amount" class="txt-input" type="number" inputmode="decimal" placeholder="0">
+    <label class="form-label">備註</label>
+    <input id="edit-note" class="txt-input" type="text" placeholder="備註（選填）">
+    <label class="form-label">日期</label>
+    <input id="edit-date" class="txt-input" type="date">
+    <label class="form-label">帳戶</label>
+    <div id="edit-acct-pick" class="acct-pick"></div>
+    <button class="bsheet-btn ok" onclick="confirmEditTx()">儲存</button>
+    <button class="bsheet-btn cnl" onclick="closeOv('ov-edit-tx')">取消</button>
+  </div>
+</div>
+
 <!-- ── Delete transaction sheet ── -->
 <div class="overlay" id="ov-del" onclick="ovClick(event,'ov-del')">
   <div class="bsheet">
     <div class="bsheet-title">刪除此筆記錄？</div>
     <button class="bsheet-btn del" onclick="confirmDel()">刪除</button>
     <button class="bsheet-btn cnl" onclick="closeOv('ov-del')">取消</button>
-  </div>
-</div>
-
-<!-- ── Edit account sheet ── -->
-<div class="overlay" id="ov-edit-account" onclick="ovClick(event,'ov-edit-account')">
-  <div class="bsheet">
-    <div class="bsheet-title" id="edit-acct-title">編輯帳戶</div>
-    <label class="form-label">初始金額</label>
-    <input id="edit-acct-init" class="txt-input" type="number" inputmode="decimal" placeholder="0">
-    <div style="font-size:12px;color:var(--muted);margin-bottom:14px">初始金額為建立帳戶時的起始餘額，不影響已記錄的交易。</div>
-    <button class="bsheet-btn ok" onclick="confirmEditAccount()">儲存</button>
-    <button class="bsheet-btn cnl" onclick="closeOv('ov-edit-account')">取消</button>
   </div>
 </div>
 
@@ -378,6 +420,18 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
   </div>
 </div>
 
+<!-- ── Edit account sheet ── -->
+<div class="overlay" id="ov-edit-account" onclick="ovClick(event,'ov-edit-account')">
+  <div class="bsheet">
+    <div class="bsheet-title" id="edit-acct-title">編輯帳戶</div>
+    <label class="form-label">初始金額</label>
+    <input id="edit-acct-init" class="txt-input" type="number" inputmode="decimal" placeholder="0">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px">初始金額為建立帳戶時的起始餘額，不影響已記錄的交易。</div>
+    <button class="bsheet-btn ok" onclick="confirmEditAccount()">儲存</button>
+    <button class="bsheet-btn cnl" onclick="closeOv('ov-edit-account')">取消</button>
+  </div>
+</div>
+
 <!-- ── Add recurring sheet ── -->
 <div class="overlay" id="ov-add-recurring" onclick="ovClick(event,'ov-add-recurring')">
   <div class="bsheet">
@@ -391,14 +445,10 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
     </div>
     <label class="form-label">分類</label>
     <select id="rec-cat-input" class="txt-input">
-      <option value="餐飲">🍱 餐飲</option>
-      <option value="交通">🚌 交通</option>
-      <option value="購物">🛒 購物</option>
-      <option value="居家">🏠 居家</option>
-      <option value="醫療">💊 醫療</option>
-      <option value="娛樂">🎮 娛樂</option>
-      <option value="教育">📚 教育</option>
-      <option value="薪資">💼 薪資</option>
+      <option value="餐飲">🍱 餐飲</option><option value="交通">🚌 交通</option>
+      <option value="購物">🛒 購物</option><option value="居家">🏠 居家</option>
+      <option value="醫療">💊 醫療</option><option value="娛樂">🎮 娛樂</option>
+      <option value="教育">📚 教育</option><option value="薪資">💼 薪資</option>
       <option value="其他">📦 其他</option>
     </select>
     <label class="form-label">扣款帳戶</label>
@@ -429,10 +479,8 @@ const CATS_INC = [
   {name:'其他收入',emoji:'💰',color:'#D1FAE5'},
 ];
 const ALL_CATS = [...CATS_EXP, ...CATS_INC];
-
 const ACCT_EMOJIS = ['💵','💳','🏦','💰','🏧','💴','💶','💷','🪙','📱'];
 const ACCT_COLORS = ['#6366f1','#10b981','#f59e0b','#ef4444','#3b82f6','#8b5cf6','#ec4899','#14b8a6'];
-
 const DEFAULT_API = 'https://script.google.com/macros/s/AKfycbyxb7p_WQHddMlU-S5czzhH8wJEjQ1ISXmwZkKjDxAJLJXbxqAfAb1-TiEAvLxYyXo-Jw/exec';
 
 function getCfg(){ return { apiUrl: localStorage.getItem('apiUrl') || DEFAULT_API }; }
@@ -453,9 +501,13 @@ function setRefreshing(on){ document.getElementById('refresh-dot').classList.tog
 const S = {
   type:'支出', category:'', account:'',
   listDate: new Date(), statsDate: new Date(),
-  pendingDel: null, donut: null, bar: null, curBudget: null,
+  pendingDel: null, donut: null, bar: null, trend: null, curBudget: null,
   accounts: [], recType: '支出', selAcctEmoji: '💵', selAcctColor: '#6366f1',
   trfFrom: '', trfTo: '', recAcct: '',
+  searchQuery: '', filterAccount: '', filterAccountName: '',
+  editTxId: null, editType: '支出', editCategory: '', editAccount: '',
+  _editTxData: null, _editAcctId: null,
+  lastTx: null,
 };
 
 // ════════════════════════════════════════════
@@ -470,6 +522,7 @@ window.addEventListener('load', ()=>{
   document.getElementById('url-input').value = localStorage.getItem('apiUrl') || DEFAULT_API;
   renderEmojiRow(); renderColorRow();
   loadAccounts();
+  loadLastTx();
   if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 });
 window.addEventListener('online', ()=>{ document.getElementById('offline-banner').classList.remove('show'); syncNow(); });
@@ -516,12 +569,14 @@ function renderAccountsTab(){
     <div style="font-size:28px;font-weight:800;color:${total>=0?'var(--income)':'var(--expense)'}">${total>=0?'':'−'}$${Math.abs(total).toLocaleString()}</div>
   </div>` + S.accounts.map(a=>`
     <div class="acct-card">
-      <div class="acct-em">${a.emoji}</div>
-      <div class="acct-body">
-        <div class="acct-name">${a.name}</div>
-        <div class="acct-bal ${a.balance>=0?'pos':'neg'}">${a.balance>=0?'':'−'}$${Math.abs(a.balance).toLocaleString()}</div>
+      <div class="acct-card-body" onclick="viewAccountTxs('${a.id}','${a.emoji} ${a.name}')">
+        <div class="acct-em">${a.emoji}</div>
+        <div class="acct-body">
+          <div class="acct-name">${a.name}</div>
+          <div class="acct-bal ${a.balance>=0?'pos':'neg'}">${a.balance>=0?'':'−'}$${Math.abs(a.balance).toLocaleString()}</div>
+        </div>
       </div>
-      <button class="acct-edit" onclick="openEditAccount('${a.id}','${a.name}',${a.initialBalance})">編輯</button>
+      <button class="acct-edit" onclick="openEditAccount('${a.id}','${a.name}',${a.initialBalance||0})">編輯</button>
       <button class="acct-del" onclick="deleteAccount('${a.id}','${a.name}')">刪除</button>
     </div>`).join('');
 }
@@ -536,6 +591,16 @@ function renderAccountSelEntry(){
 }
 
 function selAcct(id){ S.account=id; renderAccountSelEntry(); }
+
+async function deleteAccount(id, name){
+  if(!confirm(`確定要刪除帳戶「${name}」？相關交易記錄不會刪除。`)) return;
+  try{
+    await api({ action:'deleteAccount', id });
+    clearCached('accounts');
+    toast('已刪除','ok');
+    loadAccounts();
+  } catch(e){ toast('刪除失敗：'+e.message,'err'); }
+}
 
 function openEditAccount(id, name, initialBalance){
   S._editAcctId = id;
@@ -557,23 +622,12 @@ async function confirmEditAccount(){
   } catch(e){ toast('更新失敗：'+e.message,'err'); }
 }
 
-async function deleteAccount(id, name){
-  if(!confirm(`確定要刪除帳戶「${name}」？相關交易記錄不會刪除。`)) return;
-  try{
-    await api({ action:'deleteAccount', id });
-    clearCached('accounts');
-    toast('已刪除','ok');
-    loadAccounts();
-  } catch(e){ toast('刪除失敗：'+e.message,'err'); }
-}
-
-// Add account
+// Account emoji/color
 function renderEmojiRow(){
   document.getElementById('acct-emoji-row').innerHTML = ACCT_EMOJIS.map(em=>`
     <button class="emoji-btn ${S.selAcctEmoji===em?'on':''}" onclick="selEmoji('${em}')">${em}</button>`).join('');
 }
 function selEmoji(em){ S.selAcctEmoji=em; renderEmojiRow(); }
-
 function renderColorRow(){
   document.getElementById('acct-color-row').innerHTML = ACCT_COLORS.map(c=>`
     <button class="color-btn ${S.selAcctColor===c?'on':''}" style="background:${c}" onclick="selColor('${c}')"></button>`).join('');
@@ -595,14 +649,34 @@ async function confirmAddAccount(){
   } catch(e){ toast('新增失敗：'+e.message,'err'); }
 }
 
-// Transfer
-function openTransferSheet(){
-  renderAcctPicker('trf-from', S.trfFrom, id=>{ S.trfFrom=id; renderAcctPicker('trf-from',S.trfFrom,null,true); });
-  renderAcctPicker('trf-to', S.trfTo, id=>{ S.trfTo=id; renderAcctPicker('trf-to',S.trfTo,null,true); });
+// Account detail
+function viewAccountTxs(acctId, acctName){
+  S.filterAccount = acctId;
+  S.filterAccountName = acctName;
+  switchTab('list', document.getElementById('nav-list'));
+  updateFilterChip();
+  loadList();
 }
 
-function renderAcctPicker(elId, selected, onClick, rerender){
+function updateFilterChip(){
+  const el = document.getElementById('acct-filter-chip');
+  if(S.filterAccount && S.filterAccountName){
+    el.innerHTML = `<span class="filter-chip">${S.filterAccountName} <button class="filter-chip-x" onclick="clearListFilter()">×</button></span>`;
+  } else {
+    el.innerHTML = '';
+  }
+}
+
+function clearListFilter(){
+  S.filterAccount=''; S.filterAccountName='';
+  updateFilterChip();
+  loadList();
+}
+
+// Transfer
+function renderAcctPicker(elId, selected){
   const el = document.getElementById(elId);
+  if(!el) return;
   if(!S.accounts.length){ el.innerHTML='<span style="font-size:13px;color:var(--muted)">尚無帳戶</span>'; return; }
   el.innerHTML = S.accounts.map(a=>`
     <button class="acct-pick-btn ${selected===a.id?'on':''}" onclick="pickAcct('${elId}','${a.id}')">${a.emoji} ${a.name}</button>`).join('');
@@ -611,10 +685,12 @@ function renderAcctPicker(elId, selected, onClick, rerender){
 function pickAcct(elId, id){
   if(elId==='trf-from') S.trfFrom=id;
   else if(elId==='trf-to') S.trfTo=id;
-  else if(elId==='rec-acct-pick-el') S.recAcct=id;
+  else if(elId==='rec-acct-pick') S.recAcct=id;
+  else if(elId==='edit-acct-pick') S.editAccount=id;
   renderAcctPicker('trf-from', S.trfFrom);
   renderAcctPicker('trf-to', S.trfTo);
   renderRecAcctPicker();
+  renderEditAcctPick();
 }
 
 async function confirmTransfer(){
@@ -675,19 +751,14 @@ function renderRecurringList(items){
 }
 
 async function toggleRec(id){
-  try{
-    await api({ action:'toggleRecurring', id });
-    loadRecurring();
-  } catch(e){ toast('操作失敗','err'); }
+  try{ await api({ action:'toggleRecurring', id }); loadRecurring(); }
+  catch(e){ toast('操作失敗','err'); }
 }
 
 async function deleteRec(id){
   if(!confirm('確定要刪除此固定扣款？')) return;
-  try{
-    await api({ action:'deleteRecurring', id });
-    toast('已刪除','ok');
-    loadRecurring();
-  } catch(e){ toast('刪除失敗：'+e.message,'err'); }
+  try{ await api({ action:'deleteRecurring', id }); toast('已刪除','ok'); loadRecurring(); }
+  catch(e){ toast('刪除失敗：'+e.message,'err'); }
 }
 
 function setRecType(t){
@@ -701,7 +772,7 @@ function renderRecAcctPicker(){
   if(!el) return;
   if(!S.accounts.length){ el.innerHTML='<span style="font-size:13px;color:var(--muted)">請先新增帳戶</span>'; return; }
   el.innerHTML = S.accounts.map(a=>`
-    <button class="acct-pick-btn ${S.recAcct===a.id?'on':''}" onclick="pickAcct('rec-acct-pick-el','${a.id}')">${a.emoji} ${a.name}</button>`).join('');
+    <button class="acct-pick-btn ${S.recAcct===a.id?'on':''}" onclick="pickAcct('rec-acct-pick','${a.id}')">${a.emoji} ${a.name}</button>`).join('');
 }
 
 async function confirmAddRecurring(){
@@ -760,16 +831,49 @@ async function submitTx(){
       await api({ action:'addTransaction', ...data });
     } else {
       addPending(data);
-      toast('已存入離線佇列 ✓','ok');
     }
     toast('記帳成功 ✓','ok');
     const dt=new Date(date); clearMonthCache(dt.getFullYear(), dt.getMonth()+1); clearCached('accounts');
+    saveLastTx(data); updateLastTxBtn();
     document.getElementById('amount-input').value='';
     document.getElementById('note-input').value='';
     S.category=''; renderCats();
     loadAccounts();
   } catch(e){ toast('失敗：'+e.message,'err'); }
   finally{ btn.disabled=false; btn.textContent='記帳'; }
+}
+
+// ════════════════════════════════════════════
+// LAST TRANSACTION (快速重複)
+// ════════════════════════════════════════════
+function saveLastTx(data){ try{ localStorage.setItem('lastTx', JSON.stringify(data)); }catch(_){} }
+function loadLastTx(){
+  try{
+    const saved = localStorage.getItem('lastTx');
+    if(!saved) return;
+    S.lastTx = JSON.parse(saved);
+    updateLastTxBtn();
+  }catch(_){}
+}
+function updateLastTxBtn(){
+  const btn = document.getElementById('last-tx-btn');
+  const lbl = document.getElementById('last-tx-label');
+  if(!btn||!lbl) return;
+  if(S.lastTx){
+    const cat = findCat(S.lastTx.category);
+    lbl.textContent = `${cat?cat.emoji:''} ${S.lastTx.category}  $${S.lastTx.amount}`;
+    btn.style.display='block';
+  } else {
+    btn.style.display='none';
+  }
+}
+function applyLastTx(){
+  if(!S.lastTx) return;
+  setType(S.lastTx.type);
+  selCat(S.lastTx.category);
+  document.getElementById('amount-input').value = S.lastTx.amount;
+  if(S.lastTx.account){ S.account=S.lastTx.account; renderAccountSelEntry(); }
+  toast('已帶入上次記帳');
 }
 
 // ════════════════════════════════════════════
@@ -805,6 +909,14 @@ function chgMonth(tab,delta){
   else{ S.statsDate=new Date(S.statsDate.getFullYear(),S.statsDate.getMonth()+delta,1); updateStatsTitle(); loadStats(); }
 }
 
+// Search
+function onSearch(q){
+  S.searchQuery = q;
+  const y=S.listDate.getFullYear(), m=S.listDate.getMonth()+1;
+  const cached = getCached(`list_${y}_${m}`);
+  if(cached){ renderList(cached); renderListSum(cached); }
+}
+
 async function loadList(){
   const y=S.listDate.getFullYear(), m=S.listDate.getMonth()+1;
   const key=`list_${y}_${m}`;
@@ -820,10 +932,26 @@ async function loadList(){
   } finally{ setRefreshing(false); }
 }
 
-function renderList(txs){
+function renderList(allTxs){
   const el=document.getElementById('tx-list');
   const acctMap={}; S.accounts.forEach(a=>{acctMap[a.id]=a;});
-  if(!txs.length){ el.innerHTML='<div class="empty"><div class="em">📭</div>本月尚無記錄</div>'; return; }
+
+  // Apply filters
+  let txs = allTxs;
+  if(S.searchQuery){
+    const q=S.searchQuery.toLowerCase();
+    txs = txs.filter(t=>t.note.toLowerCase().includes(q)||t.category.toLowerCase().includes(q));
+  }
+  if(S.filterAccount){
+    txs = txs.filter(t=>t.account===S.filterAccount||t.toAccount===S.filterAccount);
+  }
+
+  if(!txs.length){
+    el.innerHTML=S.searchQuery||S.filterAccount
+      ? '<div class="empty"><div class="em">🔍</div>沒有符合的記錄</div>'
+      : '<div class="empty"><div class="em">📭</div>本月尚無記錄</div>';
+    return;
+  }
   const grp={};
   txs.forEach(t=>{ (grp[t.date]=grp[t.date]||[]).push(t); });
   el.innerHTML = Object.entries(grp).sort(([a],[b])=>b.localeCompare(a)).map(([date,items])=>{
@@ -837,7 +965,8 @@ function renderList(txs){
         else { const cat=findCat(t.category); em=cat?cat.emoji:'📦'; }
         const noteText = t.note && t.note.startsWith('[自動]') ? '🔄 '+t.note.slice(4) : (t.note||'—');
         const acct=acctMap[t.account]; const acctTag=acct?`<span style="font-size:10px;color:var(--muted)"> · ${acct.emoji}${acct.name}</span>`:'';
-        return `<div class="tx-item" onclick="showDel('${t.id}')">
+        const txJson = JSON.stringify({id:t.id,type:t.type,category:t.category,amount:t.amount,note:t.note,date:t.date,account:t.account}).replace(/'/g,"\\'");
+        return `<div class="tx-item" onclick="showTxOptions('${t.id}',${txJson.replace(/"/g,'&quot;')})">
           <div class="tx-em">${em}</div>
           <div class="tx-info">
             <div class="tx-cat">${t.type==='轉帳'?'轉帳':t.category}${acctTag}</div>
@@ -859,6 +988,98 @@ function renderListSum(txs){
 }
 
 // ════════════════════════════════════════════
+// TX OPTIONS + EDIT
+// ════════════════════════════════════════════
+function showTxOptions(id, txData){
+  S.pendingDel = id;
+  if(typeof txData === 'string'){
+    try{ S._editTxData = JSON.parse(txData.replace(/&quot;/g,'"')); }catch(_){ S._editTxData=null; }
+  } else {
+    S._editTxData = txData;
+  }
+  const tx = S._editTxData;
+  const title = tx ? `${findCat(tx.category)?.emoji||''} ${tx.category}・$${tx.amount}` : '選擇操作';
+  document.getElementById('tx-options-title').textContent = title;
+  openOv('ov-tx-options');
+}
+
+function openEditFromOptions(){
+  closeOv('ov-tx-options');
+  const tx = S._editTxData;
+  if(!tx) return;
+  S.editTxId = tx.id;
+  S.editType = tx.type==='轉帳' ? '支出' : tx.type;
+  S.editCategory = tx.category;
+  S.editAccount = tx.account || '';
+  // Set UI
+  document.getElementById('edit-btn-exp').className='type-btn'+(S.editType==='支出'?' on exp':' exp');
+  document.getElementById('edit-btn-inc').className='type-btn'+(S.editType==='收入'?' on inc':' inc');
+  document.getElementById('edit-amount').value = tx.amount;
+  document.getElementById('edit-note').value = tx.note || '';
+  document.getElementById('edit-date').value = tx.date;
+  renderEditCatGrid();
+  renderEditAcctPick();
+  openOv('ov-edit-tx');
+}
+
+function delFromOptions(){
+  closeOv('ov-tx-options');
+  openOv('ov-del');
+}
+
+function setEditType(t){
+  S.editType=t; S.editCategory='';
+  document.getElementById('edit-btn-exp').className='type-btn'+(t==='支出'?' on exp':' exp');
+  document.getElementById('edit-btn-inc').className='type-btn'+(t==='收入'?' on inc':' inc');
+  renderEditCatGrid();
+}
+
+function renderEditCatGrid(){
+  const cats = S.editType==='支出' ? CATS_EXP : CATS_INC;
+  document.getElementById('edit-cat-grid').innerHTML = cats.map(c=>`
+    <button class="cat-btn ${S.editCategory===c.name?'on':''}" onclick="selEditCat('${c.name}')">
+      <span class="em">${c.emoji}</span><span class="lb">${c.name}</span>
+    </button>`).join('');
+}
+function selEditCat(name){ S.editCategory=name; renderEditCatGrid(); }
+
+function renderEditAcctPick(){
+  const el = document.getElementById('edit-acct-pick');
+  if(!el) return;
+  if(!S.accounts.length){ el.innerHTML=''; return; }
+  el.innerHTML = S.accounts.map(a=>`
+    <button class="acct-pick-btn ${S.editAccount===a.id?'on':''}" onclick="pickAcct('edit-acct-pick','${a.id}')">${a.emoji} ${a.name}</button>`).join('');
+}
+
+async function confirmEditTx(){
+  const amount = parseFloat(document.getElementById('edit-amount').value);
+  const note = document.getElementById('edit-note').value.trim();
+  const date = document.getElementById('edit-date').value;
+  if(!amount||amount<=0){ toast('請輸入金額','err'); return; }
+  if(!S.editCategory){ toast('請選擇分類','err'); return; }
+  try{
+    await api({ action:'updateTransaction', id:S.editTxId, type:S.editType, category:S.editCategory, amount, note, date, account:S.editAccount });
+    const dt=new Date(date); clearMonthCache(dt.getFullYear(), dt.getMonth()+1); clearCached('accounts');
+    toast('已更新 ✓','ok');
+    closeOv('ov-edit-tx');
+    loadList(); loadAccounts();
+  } catch(e){ toast('更新失敗：'+e.message,'err'); }
+}
+
+// ════════════════════════════════════════════
+// DELETE
+// ════════════════════════════════════════════
+function showDel(id){ S.pendingDel=id; openOv('ov-del'); }
+async function confirmDel(){
+  try{
+    await api({ action:'deleteTransaction', id:S.pendingDel });
+    const y=S.listDate.getFullYear(), m=S.listDate.getMonth()+1;
+    clearMonthCache(y,m); clearCached('accounts');
+    toast('已刪除','ok'); closeOv('ov-del'); loadList(); loadAccounts();
+  } catch(e){ toast('刪除失敗：'+e.message,'err'); }
+}
+
+// ════════════════════════════════════════════
 // STATISTICS
 // ════════════════════════════════════════════
 function updateStatsTitle(){ document.getElementById('stats-month').textContent=S.statsDate.getFullYear()+'年'+(S.statsDate.getMonth()+1)+'月'; }
@@ -867,12 +1088,22 @@ async function loadStats(){
   const y=S.statsDate.getFullYear(), m=S.statsDate.getMonth()+1;
   const key=`stats_${y}_${m}`;
   const cached=getCached(key);
-  if(cached){ S.curBudget=cached.budget; renderBudget(cached.summary,cached.budget); renderDonut(cached.summary); renderBar(cached.summary,y,m); renderCatStats(cached.summary); }
+  if(cached){
+    S.curBudget=cached.budget;
+    renderBudget(cached.summary,cached.budget);
+    renderDonut(cached.summary); renderBar(cached.summary,y,m); renderCatStats(cached.summary);
+  }
   setRefreshing(true);
   try{
-    const [summary,budget]=await Promise.all([api({action:'getSummary',year:y,month:m}),api({action:'getBudget',year:y,month:m})]);
+    const [summary,budget,trend]=await Promise.all([
+      api({action:'getSummary',year:y,month:m}),
+      api({action:'getBudget',year:y,month:m}),
+      api({action:'getMonthlyTrend',months:6}),
+    ]);
     setCached(key,{summary,budget});
-    S.curBudget=budget; renderBudget(summary,budget); renderDonut(summary); renderBar(summary,y,m); renderCatStats(summary);
+    S.curBudget=budget;
+    renderBudget(summary,budget); renderDonut(summary); renderBar(summary,y,m); renderCatStats(summary);
+    renderTrend(trend);
   } catch(e){ if(!cached) toast('統計載入失敗：'+e.message,'err'); }
   finally{ setRefreshing(false); }
 }
@@ -904,6 +1135,21 @@ function renderBar(s,y,m){
   if(S.bar) S.bar.destroy();
   S.bar=new Chart(document.getElementById('chart-bar'),{type:'bar',data:{labels,datasets:[{data,backgroundColor:'#6366f133',borderColor:'#6366f1',borderWidth:1,borderRadius:3}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:'#f1f5f9'},ticks:{font:{size:11}}}}}});
 }
+function renderTrend(data){
+  if(!data||!data.length) return;
+  if(S.trend) S.trend.destroy();
+  S.trend=new Chart(document.getElementById('chart-trend'),{
+    type:'bar',
+    data:{
+      labels:data.map(d=>d.label),
+      datasets:[
+        {label:'支出',data:data.map(d=>d.expense),backgroundColor:'#ef444433',borderColor:'#ef4444',borderWidth:1.5,borderRadius:3},
+        {label:'收入',data:data.map(d=>d.income),backgroundColor:'#10b98133',borderColor:'#10b981',borderWidth:1.5,borderRadius:3},
+      ]
+    },
+    options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}},scales:{x:{grid:{display:false}},y:{grid:{color:'#f1f5f9'},ticks:{font:{size:11}}}}}
+  });
+}
 function renderCatStats(s){
   const entries=Object.entries(s.byCategory).sort((a,b)=>b[1]-a[1]);
   const max=entries.length?entries[0][1]:1;
@@ -911,19 +1157,6 @@ function renderCatStats(s){
     const c=findCat(cat); const em=c?c.emoji:'📦', color=c?c.color:'#95A5A6';
     return `<div class="cat-stat"><div class="cat-stat-em">${em}</div><div class="cat-stat-info"><div class="cat-stat-name">${cat}</div><div class="mini-bar"><div class="mini-fill" style="width:${Math.round(amt/max*100)}%;background:${color}"></div></div></div><div class="cat-stat-amt">$${amt.toLocaleString()}</div></div>`;
   }).join('')||'<div style="color:var(--muted);font-size:13px">本月尚無支出</div>';
-}
-
-// ════════════════════════════════════════════
-// DELETE
-// ════════════════════════════════════════════
-function showDel(id){ S.pendingDel=id; openOv('ov-del'); }
-async function confirmDel(){
-  try{
-    await api({ action:'deleteTransaction', id:S.pendingDel });
-    const y=S.listDate.getFullYear(), m=S.listDate.getMonth()+1;
-    clearMonthCache(y,m); clearCached('accounts');
-    toast('已刪除','ok'); closeOv('ov-del'); loadList(); loadAccounts();
-  } catch(e){ toast('刪除失敗：'+e.message,'err'); }
 }
 
 // ════════════════════════════════════════════
@@ -955,7 +1188,7 @@ function switchTab(tab,el){
   document.getElementById('panel-'+tab).classList.add('active');
   el.classList.add('on');
   document.getElementById('hdr-title').textContent=TAB_TITLES[tab];
-  if(tab==='list') loadList();
+  if(tab==='list'){ updateFilterChip(); loadList(); }
   if(tab==='accounts'){ renderAcctPicker('trf-from',S.trfFrom); renderAcctPicker('trf-to',S.trfTo); renderRecAcctPicker(); loadAccounts(); loadRecurring(); }
   if(tab==='stats') loadStats();
   if(tab==='settings') updatePendingUI();
