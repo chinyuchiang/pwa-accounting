@@ -93,6 +93,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .acct-bal.pos{color:var(--income)}
 .acct-bal.neg{color:var(--expense)}
 .acct-del{padding:6px 10px;border:none;background:var(--expense-light);color:var(--expense);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer}
+.acct-edit{padding:6px 10px;border:none;background:var(--primary-light);color:var(--primary);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;margin-right:4px}
 /* Action row */
 .action-row{display:flex;gap:8px;margin-bottom:16px}
 .action-btn{flex:1;padding:12px;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
@@ -319,6 +320,18 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
   </div>
 </div>
 
+<!-- ── Edit account sheet ── -->
+<div class="overlay" id="ov-edit-account" onclick="ovClick(event,'ov-edit-account')">
+  <div class="bsheet">
+    <div class="bsheet-title" id="edit-acct-title">編輯帳戶</div>
+    <label class="form-label">初始金額</label>
+    <input id="edit-acct-init" class="txt-input" type="number" inputmode="decimal" placeholder="0">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px">初始金額為建立帳戶時的起始餘額，不影響已記錄的交易。</div>
+    <button class="bsheet-btn ok" onclick="confirmEditAccount()">儲存</button>
+    <button class="bsheet-btn cnl" onclick="closeOv('ov-edit-account')">取消</button>
+  </div>
+</div>
+
 <!-- ── Budget sheet ── -->
 <div class="overlay" id="ov-budget" onclick="ovClick(event,'ov-budget')">
   <div class="bsheet">
@@ -508,6 +521,7 @@ function renderAccountsTab(){
         <div class="acct-name">${a.name}</div>
         <div class="acct-bal ${a.balance>=0?'pos':'neg'}">${a.balance>=0?'':'−'}$${Math.abs(a.balance).toLocaleString()}</div>
       </div>
+      <button class="acct-edit" onclick="openEditAccount('${a.id}','${a.name}',${a.initialBalance})">編輯</button>
       <button class="acct-del" onclick="deleteAccount('${a.id}','${a.name}')">刪除</button>
     </div>`).join('');
 }
@@ -522,6 +536,26 @@ function renderAccountSelEntry(){
 }
 
 function selAcct(id){ S.account=id; renderAccountSelEntry(); }
+
+function openEditAccount(id, name, initialBalance){
+  S._editAcctId = id;
+  document.getElementById('edit-acct-title').textContent = `✏️ ${name}`;
+  document.getElementById('edit-acct-init').value = initialBalance;
+  openOv('ov-edit-account');
+  setTimeout(()=>document.getElementById('edit-acct-init').focus(), 300);
+}
+
+async function confirmEditAccount(){
+  const val = parseFloat(document.getElementById('edit-acct-init').value);
+  if(isNaN(val)){ toast('請輸入有效金額','err'); return; }
+  try{
+    await api({ action:'updateAccount', id:S._editAcctId, initialBalance:val });
+    clearCached('accounts');
+    toast('已更新 ✓','ok');
+    closeOv('ov-edit-account');
+    loadAccounts();
+  } catch(e){ toast('更新失敗：'+e.message,'err'); }
+}
 
 async function deleteAccount(id, name){
   if(!confirm(`確定要刪除帳戶「${name}」？相關交易記錄不會刪除。`)) return;

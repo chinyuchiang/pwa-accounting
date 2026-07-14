@@ -58,6 +58,8 @@ function doGet(e) {
       result = addAccount({ name: p.name, emoji: p.emoji, initialBalance: parseFloat(p.initialBalance) || 0, color: p.color });
     } else if (action === 'deleteAccount') {
       result = deleteAccount(p.id);
+    } else if (action === 'updateAccount') {
+      result = updateAccount(p.id, { initialBalance: parseFloat(p.initialBalance) });
     } else if (action === 'transfer') {
       result = transfer({ fromAccount: p.fromAccount, toAccount: p.toAccount, amount: parseFloat(p.amount), date: p.date, note: p.note || '' });
     } else if (action === 'getRecurring') {
@@ -262,6 +264,20 @@ function addAccount(data) {
   var id = Utilities.getUuid();
   sheet.appendRow([id, data.name, data.emoji || '💳', Number(data.initialBalance) || 0, data.color || '#6366f1']);
   return { id: id, name: data.name, emoji: data.emoji || '💳', initialBalance: Number(data.initialBalance) || 0, color: data.color || '#6366f1' };
+}
+
+function updateAccount(id, data) {
+  var sheet = getSheet(SHEET_NAMES.ACCOUNTS);
+  var rows = sheet.getDataRange().getValues();
+  for (var i = 1; i < rows.length; i++) {
+    if (String(rows[i][0]) === String(id)) {
+      if (data.initialBalance !== undefined && !isNaN(data.initialBalance)) {
+        sheet.getRange(i + 1, 4).setValue(data.initialBalance);
+      }
+      return { updated: id };
+    }
+  }
+  throw new Error('找不到帳戶: ' + id);
 }
 
 function deleteAccount(id) {
