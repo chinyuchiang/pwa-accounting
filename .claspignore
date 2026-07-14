@@ -1,0 +1,6 @@
+index.html
+sw.js
+manifest.json
+icon.svg
+.clasp.json
+node_modules/**
