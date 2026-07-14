@@ -14,6 +14,7 @@ var SHEET_NAMES = {
   CATEGORIES: 'categories',
   ACCOUNTS: 'accounts',
   RECURRING: 'recurring',
+  CAT_BUDGETS: 'categoryBudgets',
 };
 
 var CATEGORY_KEYWORDS = {
@@ -76,6 +77,10 @@ function doGet(e) {
       result = getMonthlyTrend(parseInt(p.months) || 6);
     } else if (action === 'getYearlySummary') {
       result = getYearlySummary(parseInt(p.year) || new Date().getFullYear());
+    } else if (action === 'getCategoryBudgets') {
+      result = getCategoryBudgets(p.year, p.month);
+    } else if (action === 'setCategoryBudget') {
+      result = setCategoryBudget(p.year, p.month, p.category, parseFloat(p.amount) || 0);
     } else if (action === 'processRecurring') {
       result = processRecurring();
     } else if (action === 'debugTx') {
@@ -139,6 +144,8 @@ function initSheet(sheet, name) {
     sheet.getRange(1, 1, 1, 5).setValues([['ID', '名稱', 'Emoji', '初始餘額', '顏色']]);
   } else if (name === SHEET_NAMES.RECURRING) {
     sheet.getRange(1, 1, 1, 8).setValues([['ID', '名稱', '金額', '分類', '帳戶ID', '每月日期', '啟用', '類型']]);
+  } else if (name === SHEET_NAMES.CAT_BUDGETS) {
+    sheet.getRange(1, 1, 1, 4).setValues([['年', '月', '分類', '預算']]);
   }
 }
 
@@ -503,6 +510,36 @@ function getYearlySummary(year) {
     else if (type === '支出') monthMap[key2].expense += amount;
   }
   return result;
+}
+
+// ============================================================
+// Category Budgets
+// ============================================================
+
+function getCategoryBudgets(year, month) {
+  var sheet = getSheet(SHEET_NAMES.CAT_BUDGETS);
+  var data = sheet.getDataRange().getValues();
+  var result = {};
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0] == year && data[i][1] == month && data[i][2]) {
+      result[String(data[i][2])] = Number(data[i][3]);
+    }
+  }
+  return result;
+}
+
+function setCategoryBudget(year, month, category, amount) {
+  var sheet = getSheet(SHEET_NAMES.CAT_BUDGETS);
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0] == year && data[i][1] == month && String(data[i][2]) === String(category)) {
+      if (amount <= 0) { sheet.deleteRow(i + 1); return { deleted: category }; }
+      sheet.getRange(i + 1, 4).setValue(amount);
+      return { year: Number(year), month: Number(month), category: category, amount: amount };
+    }
+  }
+  if (amount > 0) sheet.appendRow([Number(year), Number(month), category, amount]);
+  return { year: Number(year), month: Number(month), category: category, amount: amount };
 }
 
 // ============================================================
