@@ -211,6 +211,10 @@ body{
 /* ── Misc ── */
 .loading{text-align:center;padding:32px;color:var(--muted)}
 .empty{text-align:center;padding:40px 16px;color:var(--muted)}
+/* ── Refresh dot ── */
+#refresh-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.5);display:none;margin-left:6px;vertical-align:middle}
+#refresh-dot.on{display:inline-block;animation:pulse .9s infinite}
+@keyframes pulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
 .empty .em{font-size:44px;margin-bottom:10px}
 .section-mb{margin-bottom:16px}
 input[type=number]::-webkit-inner-spin-button,
@@ -223,6 +227,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 
 <header class="hdr">
   <h1 id="hdr-title">💰 記帳本</h1>
+  <span id="refresh-dot"></span>
   <span id="pending-badge" style="font-size:12px;display:none"></span>
 </header>
 
@@ -414,6 +419,15 @@ function getCfg(){
 }
 
 // ════════════════════════════════════════════
+// CACHE
+// ════════════════════════════════════════════
+const CACHE_TTL = 5 * 60 * 1000;
+function getCached(key){ try{ const v=localStorage.getItem('c_'+key); if(!v) return null; const {d,t}=JSON.parse(v); if(Date.now()-t>CACHE_TTL){localStorage.removeItem('c_'+key);return null;} return d; }catch(_){return null;} }
+function setCached(key,data){ try{ localStorage.setItem('c_'+key,JSON.stringify({d:data,t:Date.now()})); }catch(_){} }
+function clearCached(key){ localStorage.removeItem('c_'+key); }
+function setRefreshing(on){ document.getElementById('refresh-dot').classList.toggle('on',on); }
+
+// ════════════════════════════════════════════
 // STATE
 // ════════════════════════════════════════════
 const S = {
@@ -510,6 +524,8 @@ async function submitTx(){
       toast('已存入離線佇列 ✓','ok');
     }
     toast('記帳成功 ✓','ok');
+    const d=document.getElementById('date-input').value;
+    if(d){ const dt=new Date(d); clearCached(`list_${dt.getFullYear()}_${dt.getMonth()+1}`); clearCached(`stats_${dt.getFullYear()}_${dt.getMonth()+1}`); }
     document.getElementById('amount-input').value='';
     document.getElementById('note-input').value='';
     S.category=''; renderCats();
@@ -574,14 +590,18 @@ function chgMonth(tab, delta){
 
 async function loadList(){
   const y=S.listDate.getFullYear(), m=S.listDate.getMonth()+1;
-  document.getElementById('tx-list').innerHTML='<div class="loading">載入中…</div>';
+  const key=`list_${y}_${m}`;
+  const cached=getCached(key);
+  if(cached){ renderList(cached); renderListSum(cached); }
+  else{ document.getElementById('tx-list').innerHTML='<div class="loading">載入中…</div>'; }
+  setRefreshing(true);
   try{
     const txs = await api({ action:'getTransactions', year:y, month:m });
-    renderList(txs); renderListSum(txs);
+    setCached(key,txs); renderList(txs); renderListSum(txs);
   } catch(e){
-    document.getElementById('tx-list').innerHTML=
+    if(!cached) document.getElementById('tx-list').innerHTML=
       `<div class="empty"><div class="em">❌</div>載入失敗<br><small>${e.message}</small></div>`;
-  }
+  } finally{ setRefreshing(false); }
 }
 
 function renderList(txs){
@@ -636,17 +656,29 @@ function updateStatsTitle(){
 
 async function loadStats(){
   const y=S.statsDate.getFullYear(), m=S.statsDate.getMonth()+1;
+  const key=`stats_${y}_${m}`;
+  const cached=getCached(key);
+  if(cached){
+    S.curBudget=cached.budget;
+    renderBudget(cached.summary,cached.budget);
+    renderDonut(cached.summary);
+    renderBar(cached.summary,y,m);
+    renderCatStats(cached.summary);
+  }
+  setRefreshing(true);
   try{
     const [summary, budget] = await Promise.all([
       api({ action:'getSummary', year:y, month:m }),
       api({ action:'getBudget',  year:y, month:m }),
     ]);
+    setCached(key,{summary,budget});
     S.curBudget = budget;
     renderBudget(summary, budget);
     renderDonut(summary);
     renderBar(summary, y, m);
     renderCatStats(summary);
-  } catch(e){ toast('統計載入失敗：'+e.message,'err'); }
+  } catch(e){ if(!cached) toast('統計載入失敗：'+e.message,'err'); }
+  finally{ setRefreshing(false); }
 }
 
 function renderBudget(s, b){
@@ -729,6 +761,8 @@ function showDel(id){ S.pendingDel=id; openOv('ov-del'); }
 async function confirmDel(){
   try{
     await api({ action:'deleteTransaction', id:S.pendingDel });
+    const y=S.listDate.getFullYear(), m=S.listDate.getMonth()+1;
+    clearCached(`list_${y}_${m}`); clearCached(`stats_${y}_${m}`);
     toast('已刪除','ok'); closeOv('ov-del'); loadList();
   } catch(e){ toast('刪除失敗：'+e.message,'err'); }
 }
