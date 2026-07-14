@@ -74,6 +74,8 @@ function doGet(e) {
       result = updateTransaction(p.id, { date: p.date, type: p.type, category: p.category, amount: parseFloat(p.amount), note: p.note || '', account: p.account || '' });
     } else if (action === 'getMonthlyTrend') {
       result = getMonthlyTrend(parseInt(p.months) || 6);
+    } else if (action === 'getYearlySummary') {
+      result = getYearlySummary(parseInt(p.year) || new Date().getFullYear());
     } else if (action === 'processRecurring') {
       result = processRecurring();
     } else if (action === 'debugTx') {
@@ -469,6 +471,31 @@ function getMonthlyTrend(months) {
     var r = data[j];
     if (!r[0]) continue;
     var key2 = sheetDateStr(r[1]).substring(0, 7);
+    if (!monthMap[key2]) continue;
+    var type = String(r[2] || '');
+    var amount = Number(r[4]) || 0;
+    if (type === '收入') monthMap[key2].income += amount;
+    else if (type === '支出') monthMap[key2].expense += amount;
+  }
+  return result;
+}
+
+function getYearlySummary(year) {
+  var sheet = getSheet(SHEET_NAMES.TRANSACTIONS);
+  var data = sheet.getDataRange().getValues();
+  var result = [];
+  var monthMap = {};
+  for (var m = 1; m <= 12; m++) {
+    var key = String(year) + '-' + String(m).padStart(2, '0');
+    var entry = { month: m, label: m + '月', expense: 0, income: 0 };
+    monthMap[key] = entry;
+    result.push(entry);
+  }
+  for (var i = 1; i < data.length; i++) {
+    var r = data[i];
+    if (!r[0]) continue;
+    var dateStr = sheetDateStr(r[1]);
+    var key2 = dateStr.substring(0, 7);
     if (!monthMap[key2]) continue;
     var type = String(r[2] || '');
     var amount = Number(r[4]) || 0;
